@@ -4,7 +4,20 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getKhachHangById } from '@/lib/api/khachhang';
 import { getProductsByCustomer } from '@/lib/api/xuat-hanghoa';
-import type { KhachHang } from '@/types/database.types';
+import type { KhachHang, HangHoa, XuatHangHoa } from '@/types/database.types';
+
+// Type for customer product with joined data
+interface CustomerProduct {
+  ma_chungtu: string;
+  ma_hanghoa: number;
+  soluongle: number;
+  dongia: number;
+  solo: string | null;
+  chietkhau: number;
+  thanhtien: number;
+  tbl_hanghoa?: HangHoa;
+  tbl_xuat_hanghoa?: XuatHangHoa;
+}
 
 export default function KhachHangDetailPage() {
   const router = useRouter();
@@ -13,8 +26,8 @@ export default function KhachHangDetailPage() {
 
   const [mounted, setMounted] = useState(false);
   const [customer, setCustomer] = useState<KhachHang | null>(null);
-  const [products, setProducts] = useState<any[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<CustomerProduct[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<CustomerProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -59,7 +72,7 @@ export default function KhachHangDetailPage() {
     }
 
     const searchLower = searchTerm.toLowerCase();
-    const filtered = products.filter((product: any) => {
+    const filtered = products.filter((product) => {
       const productName = product.tbl_hanghoa?.ten_bietduoc || product.tbl_hanghoa?.ten_hoaduoc || '';
       const productCode = String(product.ma_hanghoa || '');
       return (
@@ -307,7 +320,7 @@ export default function KhachHangDetailPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {paginatedProducts.map((product: any, index: number) => (
+                    {paginatedProducts.map((product, index) => (
                       <tr key={`${product.ma_chungtu}-${product.ma_hanghoa}-${index}`} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {startIndex + index + 1}
